@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "code": "01",
+      "description": "CREDITO FISCAL|FISCAL CREDIT"
+    },
+    {
+      "code": "02",
+      "description": "CONSUMO|CONSUMPTION"
+    },
+    {
+      "code": "03",
+      "description": "NOTAS DEBITO|DEBIT NOTES"
+    },
+    {
+      "code": "04",
+      "description": "NOTAS CREDITO|CREDIT NOTES"
+    },
+    {
+      "code": "13",
+      "description": "GASTOS MENORES|MINOR EXPENSES"
+    },
+    {
+      "code": "14",
+      "description": "REGIMENES ESPECIALES|SPECIAL REGIMES"
+    },
+    {
+      "code": "15",
+      "description": "GUBERNAMENTAL"
+    }
+  ]
+}
