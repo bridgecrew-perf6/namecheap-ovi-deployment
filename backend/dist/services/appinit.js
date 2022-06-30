@@ -1,30 +1,33 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppInit = void 0;
+const exception_1 = __importDefault(require("../utils/exception"));
 const db = require('../utils/db');
 const moment = require('moment');
 class AppInit {
     constructor() {
         this.userProcess = 'PROCESS';
-        this.isrIGC = 0;
-        this.transferCharge = 0;
-        this.transferCommission = 0;
+        this.distributionRate = 0;
     }
     // Loads Settings
     LoadSettings() {
         let sqlStr = "SELECT * FROM settings WHERE CODE = 'GENERALCONFIG'";
-        db.query(sqlStr, (err, result, fields) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            var result = JSON.stringify(result);
-            var Data = JSON.parse(result);
-            var Config = JSON.parse(Data[0].DATA);
-            this.isrIGC = Config[0]['IGC'];
-            this.transferCharge = Config[0]['Transfer Charge'];
-            this.transferCommission = Config[0]['Transfer Commission'];
-            return result;
+        return new Promise((resolve, reject) => {
+            db.query(sqlStr, (err, result, fields) => {
+                if (err) {
+                    const rtn = (0, exception_1.default)(100, err.code, 'bachend.updateCreditProcess', err);
+                    console.error(rtn);
+                    return resolve('{"code": "' + rtn.code + '", "message": "' + rtn.message + '"}');
+                }
+                var result = JSON.stringify(result);
+                var Data = JSON.parse(result);
+                var Config = JSON.parse(Data[0].DATA);
+                this.distributionRate = Config['DistributionRate'];
+                resolve(result);
+            });
         });
     }
     // Calculates Days between to Dates

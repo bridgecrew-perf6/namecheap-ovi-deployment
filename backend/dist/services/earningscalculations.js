@@ -11,60 +11,64 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EarningsCalculations = void 0;
 const appinit_1 = require("../services/appinit");
-const investments = require("../services/investments");
-// Investment Status
-var InvestmentStatus;
-(function (InvestmentStatus) {
-    InvestmentStatus[InvestmentStatus["active"] = 0] = "active";
-    InvestmentStatus[InvestmentStatus["processed"] = 1] = "processed";
-    InvestmentStatus[InvestmentStatus["finalized"] = 2] = "finalized";
-    InvestmentStatus[InvestmentStatus["canceled"] = 3] = "canceled";
-})(InvestmentStatus || (InvestmentStatus = {}));
-// Investments Transaction Types
-var investmentsTransactionTypes;
-(function (investmentsTransactionTypes) {
-    investmentsTransactionTypes[investmentsTransactionTypes["investment"] = 0] = "investment";
-    investmentsTransactionTypes[investmentsTransactionTypes["payment"] = 1] = "payment";
-    investmentsTransactionTypes[investmentsTransactionTypes["reinvestment"] = 2] = "reinvestment";
-})(investmentsTransactionTypes || (investmentsTransactionTypes = {}));
-// Investments Types
-var investmentsTypes;
-(function (investmentsTypes) {
-    investmentsTypes[investmentsTypes["compoundInterest"] = 0] = "compoundInterest";
-    investmentsTypes[investmentsTypes["simpleInterest"] = 1] = "simpleInterest";
-})(investmentsTypes || (investmentsTypes = {}));
-// Investment Calculus Row
+const credits = require("./credits");
+const interests = require("../services/interests");
+// Transaction Status
+var TransactionStatus;
+(function (TransactionStatus) {
+    TransactionStatus[TransactionStatus["active"] = 0] = "active";
+    TransactionStatus[TransactionStatus["processed"] = 1] = "processed";
+    TransactionStatus[TransactionStatus["niu1"] = 2] = "niu1";
+    TransactionStatus[TransactionStatus["niu2"] = 3] = "niu2";
+    TransactionStatus[TransactionStatus["niu3"] = 4] = "niu3";
+    TransactionStatus[TransactionStatus["canceled"] = 5] = "canceled";
+})(TransactionStatus || (TransactionStatus = {}));
+// Credit Calculus Row
 class CalculusRow {
-    constructor(_customer, _investmentCode, _days, _date, _initialAmount, _baseOfCalculus, _gain, _balance, _gainsTotal, _investmentTotal) {
+    constructor(_customer, _creditCode, _sequence, _initialCredit, _creditIncreases, _interests, _debits, _transfers, _fees, _feesChanges, _distributionRate, _interest, _balance, _date) {
+        this.sequence = 0;
+        this.initialCredit = 0;
+        this.creditIncreases = 0;
+        this.interests = 0;
+        this.debits = 0;
+        this.transfers = 0;
+        this.fees = 0;
+        this.feesChanges = 0;
+        this.distributionRate = 0;
+        this.interest = 0;
+        this.balance = 0;
+        this.date = new Date();
         this.customer = _customer;
-        this.investmentCode = _investmentCode;
-        this.days = _days;
-        this.date = _date;
-        this.initialAmount = _initialAmount;
-        this.baseOfCalculus = _baseOfCalculus;
-        this.gain = _gain;
+        this.creditCode = _creditCode;
+        this.sequence = _sequence;
+        this.initialCredit = _initialCredit;
+        this.creditIncreases = _creditIncreases;
+        this.interests = _interests;
+        this.debits = _debits;
+        this.transfers = _transfers;
+        this.fees = _fees;
+        this.feesChanges = _feesChanges;
+        this.distributionRate = _distributionRate;
+        this.interest = _interest;
         this.balance = _balance;
-        this.gainsTotal = _gainsTotal;
-        this.investmentTotal = _investmentTotal;
+        this.date = new Date(_date);
     }
     ;
 }
-// Calculates the investments Gains
+// Calculates the Credits Interests
 class Calculus {
     constructor() {
-        this.initialInvestment = 0;
-        this.type = 0;
-        this.baseOfCalculus = 0;
-        this.balance = 0; // Last calculation
-        this.rate = 0;
-        this.gain = 0;
-        this.elapsedDays = 0;
-        this.elapsedMonths = 0;
-        this.gainsTotal = 0; // Only for simulation
-        this.gainsCustomer = 0;
-        this.investmentTotal = 0; // Only for simulation
+        this.initialCredit = 0;
+        this.creditIncreases = 0;
+        this.interests = 0;
+        this.debits = 0;
+        this.transfers = 0;
+        this.fees = 0;
+        this.feesChanges = 0;
+        this.distributionRate = 0;
+        this.interest = 0;
+        this.balance = 0;
     }
-    // bool LeapYear = false;
     DaysBetween(From, To) {
         let daysBetweenDates = 0;
         if (From != undefined && To != undefined) {
@@ -73,56 +77,38 @@ class Calculus {
         }
         return daysBetweenDates;
     }
-    Set(_initialInvestment, _type, _rate, _creation, _lastCalculation, _elapsedDays, _gains) {
-        this.gainsCustomer = _gains;
-        this.initialInvestment = _initialInvestment;
-        this.type = _type;
-        this.rate = _rate / 100;
-        this.creationDate = _creation;
-        this.lastCalculation = _lastCalculation;
-        this.baseOfCalculus = this.initialInvestment;
-        this.balance = this.initialInvestment;
-        this.elapsedDays = _elapsedDays;
-        //
-        // leapYear = AppInit.isLeapYear(DateTime.now().year);
-        // bool isFebruary = date.month == 2;
-        // if (!isFebruary && days < 30 ||
-        //     isFebruary && !leapYear && days < 28 ||
-        //     isFebruary && leapYear && days < 29) {
-        //   continue;
-        // }
+    LoadDistributionRate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let appInit = new appinit_1.AppInit();
+            yield appInit.LoadSettings();
+            this.distributionRate = appInit.distributionRate / 100;
+        });
+    }
+    Set(_initialCredit, _creditIncreases, _interests, _debits, _transfers, _fees, _feesChanges, _creation) {
+        this.initialCredit = _initialCredit;
+        this.creditIncreases = _creditIncreases;
+        this.interests = _interests;
+        this.debits = _debits;
+        this.transfers = _transfers;
+        this.fees = _fees;
+        this.feesChanges = _feesChanges;
+        this.creation = new Date(_creation);
     }
     // Execute calculation
-    Execute(simulation) {
-        this.elapsedDays = this.elapsedDays + 30;
-        let months = this.elapsedDays / 30;
-        this.elapsedMonths = Math.trunc(months); // Get the integer part
-        if (this.creationDate != undefined && this.lastCalculation != undefined) {
-            this.creationDate = new Date(this.creationDate);
-            this.lastCalculation = new Date(this.lastCalculation);
-            if (simulation) {
-                this.lastCalculation.setDate(this.creationDate.getDate() + 30);
-            }
-        }
-        if (this.type == investmentsTypes.compoundInterest) {
-            this.gain = this.baseOfCalculus * this.rate;
-            this.balance = this.balance + this.gain;
-        }
-        else {
-            this.gain = this.baseOfCalculus * this.rate;
-            this.balance = this.balance + this.gain;
-        }
-        this.gainsTotal = this.gainsTotal + this.gain;
-        this.gainsCustomer = this.gainsCustomer + this.gain;
+    Execute() {
+        let totalCredit = (this.initialCredit + this.creditIncreases) - this.feesChanges;
+        this.interest = totalCredit * this.distributionRate;
+        let cr = (this.initialCredit + this.creditIncreases + this.interests);
+        let db = (this.debits + this.transfers + this.fees);
+        this.balance = cr - db;
     }
-    // Execute calculation if a month has passed
+    // Execute calculation if a day has passed
     TryExecute() {
         let rsl = false;
-        let tempElapsedDays = this.elapsedDays + 30;
         let DateNow = new Date();
-        let _elapsedDays = this.DaysBetween(this.creationDate, DateNow);
-        if (_elapsedDays >= tempElapsedDays) {
-            this.Execute(false);
+        let _elapsedDays = this.DaysBetween(this.creation, DateNow);
+        if (_elapsedDays >= 1) {
+            this.Execute();
             rsl = true;
         }
         return rsl;
@@ -131,15 +117,7 @@ class Calculus {
     //  of a period is the one to consider, because is the result of adding the
     //  initial investment with all the gains of every period.
     Total() {
-        this.investmentTotal = this.investmentTotal + this.balance;
-    }
-    // Transfers the investment calculation to the next initial investment value
-    //  that serves as calculation base for the next calculation in case of
-    //  simulations
-    Next() {
-        if (this.type == investmentsTypes.compoundInterest) {
-            this.baseOfCalculus = this.balance;
-        }
+        this.interests = this.interests + this.interest;
     }
 }
 // Earnings Calculation
@@ -151,7 +129,7 @@ class EarningsCalculations {
     // Simulate Calculation
     Simulate(totalDays, saveRecord) {
         return __awaiter(this, void 0, void 0, function* () {
-            var result = yield investments.readAllMainInvestments();
+            var result = yield credits.readAllCredits();
             this.investList = JSON.parse(result);
             this.calculusTable = [];
             if (this.investList.length == 0) {
@@ -159,80 +137,74 @@ class EarningsCalculations {
             }
             //**************************************************************************
             // Do Projection Calculation
-            let months = totalDays / 30;
             let calculus = new Calculus();
+            yield calculus.LoadDistributionRate();
+            let DateNow = new Date();
             for (let i = 0; i < this.investList.length; i++) {
-                let actualBalance = this.investList[i].AMOUNT + this.investList[i].INCREMENT +
-                    (this.investList[i].GAIN - this.investList[i].TOTALPAID);
-                calculus.Set(actualBalance, this.investList[i].INVESTMENTTYPE, this.investList[i].RATE, this.investList[i].CREATION, this.investList[i].LASTCALCULATION, this.investList[i].ELAPSEDDAYS, this.investList[i].GAIN);
-                for (let m = 0; m < months; m++) {
-                    calculus.Execute(true);
-                    if (calculus.elapsedDays <= this.investList[i].DURATION) {
-                        let calcRow = new CalculusRow(this.investList[i].NAMES, this.investList[i].CODE, calculus.elapsedDays, calculus.lastCalculation, calculus.initialInvestment, calculus.baseOfCalculus, calculus.gain, calculus.balance, calculus.gainsTotal, calculus.investmentTotal);
-                        calculus.Next();
-                        this.calculusTable.push(calcRow);
-                        // Saves Record
-                        if (saveRecord) {
-                            yield this.SaveRecord(i, calculus.elapsedMonths, calculus.gain, calculus.lastCalculation, calculus.elapsedDays, calculus.creationDate, calculus.gainsCustomer);
-                        }
+                calculus.Set(this.investList[i].INITIALCREDIT, this.investList[i].CREDITINCREASES, this.investList[i].INTERESTS, this.investList[i].DEBITS, this.investList[i].TRANSFERS, this.investList[i].FEES, this.investList[i].FEESCHANGES, this.investList[i].CREATION);
+                for (let d = 0; d < totalDays; d++) {
+                    let sequence = calculus.DaysBetween(DateNow, calculus.creation);
+                    calculus.Execute();
+                    let calcRow = new CalculusRow(this.investList[i].NAMES, this.investList[i].CODE, sequence, calculus.initialCredit, calculus.creditIncreases, calculus.interests, calculus.debits, calculus.transfers, calculus.fees, calculus.feesChanges, calculus.distributionRate, calculus.interest, calculus.balance, DateNow);
+                    this.calculusTable.push(calcRow);
+                    calculus.Total();
+                    DateNow.setDate(DateNow.getDate() + 1);
+                    // Saves Record
+                    if (saveRecord) {
+                        yield this.SaveRecord(i, sequence, calculus.interest, calculus.interests, DateNow);
                     }
-                }
-                calculus.Total();
-                if (this.calculusTable.length > 0) {
-                    this.calculusTable[this.calculusTable.length - 1].investmentTotal = calculus.investmentTotal;
                 }
             }
             var JsonString = JSON.stringify(this.calculusTable);
+            this.calculusTable = [];
             return JsonString;
         });
     }
     // Execute
     Execute(saveRecord) {
         return __awaiter(this, void 0, void 0, function* () {
-            var result = yield investments.readAllMainInvestments();
+            var result = yield credits.readAllCredits();
             this.investList = JSON.parse(result);
             this.calculusTable = [];
             if (this.investList.length == 0) {
                 return;
             }
-            // Executes calculations
+            //**************************************************************************
+            // Do Projection Calculation
             let calculus = new Calculus();
+            yield calculus.LoadDistributionRate();
+            let DateNow = new Date();
             for (let i = 0; i < this.investList.length; i++) {
-                let actualBalance = this.investList[i].AMOUNT + this.investList[i].INCREMENT +
-                    (this.investList[i].GAIN - this.investList[i].TOTALPAID);
-                calculus.Set(actualBalance, this.investList[i].INVESTMENTTYPE, this.investList[i].RATE, this.investList[i].CREATION, this.investList[i].LASTCALCULATION, this.investList[i].ELAPSEDDAYS, this.investList[i].GAIN);
-                let rsl = calculus.TryExecute();
-                if (rsl == true && calculus.elapsedDays <= this.investList[i].DURATION) {
-                    let calcRow = new CalculusRow(this.investList[i].NAMES, this.investList[i].CODE, calculus.elapsedDays, calculus.lastCalculation, calculus.initialInvestment, calculus.baseOfCalculus, calculus.gain, calculus.balance, calculus.gainsTotal, calculus.investmentTotal);
-                    calculus.Next();
-                    this.calculusTable.push(calcRow);
-                    calculus.Total();
-                    // Saves Record
-                    if (saveRecord) {
-                        yield this.SaveRecord(i, calculus.elapsedMonths, calculus.gain, calculus.lastCalculation, calculus.elapsedDays, calculus.creationDate, calculus.gainsCustomer);
-                    }
+                calculus.Set(this.investList[i].INITIALCREDIT, this.investList[i].CREDITINCREASES, this.investList[i].INTERESTS, this.investList[i].DEBITS, this.investList[i].TRANSFERS, this.investList[i].FEES, this.investList[i].FEESCHANGES, this.investList[i].CREATION);
+                let sequence = calculus.DaysBetween(DateNow, calculus.creation);
+                calculus.Execute();
+                let calcRow = new CalculusRow(this.investList[i].NAMES, this.investList[i].CODE, sequence, calculus.initialCredit, calculus.creditIncreases, calculus.interests, calculus.debits, calculus.transfers, calculus.fees, calculus.feesChanges, calculus.distributionRate, calculus.interest, calculus.balance, DateNow);
+                //calculus.Next();
+                this.calculusTable.push(calcRow);
+                calculus.Total();
+                // Saves Record
+                if (saveRecord) {
+                    yield this.SaveRecord(i, sequence, calculus.interest, calculus.interests, DateNow);
                 }
             }
+            this.calculusTable = [];
         });
     }
     // Saves Record
-    SaveRecord(_i, _elapsedMonths, _gain, _lastCalculation, _elapsedDays, _creationDate, _gainsCustomer) {
+    SaveRecord(_i, _sequence, _interest, _interests, _creationDate) {
         return __awaiter(this, void 0, void 0, function* () {
             let appInit = new appinit_1.AppInit();
-            // Creates Reinvestment Record
-            let res = yield investments.createInvestment(0, _elapsedMonths, this.investList[_i].CUSTOMER, this.investList[_i].CODE, investmentsTransactionTypes.investment, this.investList[_i].INVESTMENTTYPE, this.investList[_i].BRANCH, _gain, this.investList[_i].CURRENCY, this.investList[_i].RATE, this.investList[_i].PENALTY, this.investList[_i].FIXEDPAYMENT, this.investList[_i].BENEFICIARIES, this.investList[_i].SECONDARYOWNERS, 0, this.investList[_i].EARNINGSCOLLECTIONPERIOD, this.investList[_i].DURATION, 0, 0, 0, appInit.SQLDateTime(_lastCalculation), _gain, _elapsedDays, 0, 0, 0, '', appInit.SQLDateTime(_lastCalculation), appInit.userProcess, appInit.SQLDateTime(_lastCalculation), InvestmentStatus.processed);
+            // Creates Interest Record
+            let res = yield interests.createInterest(this.investList[_i].CODE, this.investList[_i].CUSTOMER, _sequence, _interest, _creationDate);
             var resJson = JSON.parse(res);
+            // Update If Record Exists
+            if (resJson.code == 'ER_DUP_ENTRY') {
+                res = yield interests.updateInterest(this.investList[_i].CODE, _interest);
+            }
             if (resJson.code == 200) {
-                // Updates investment GAIN, ELAPSEDDAYS, LASTCALCULATION, STATUS
-                res = yield investments.updateInvestmentProcess(this.investList[_i].CODE, _lastCalculation, _gainsCustomer, _elapsedDays, InvestmentStatus.processed);
+                // Updates credit INTERESTS
+                res = yield credits.updateCreditProcess(this.investList[_i].CODE, this.investList[_i].CREDITSELECTION, this.investList[_i].CREDITINCREASES, _interests, this.investList[_i].DEBITS, this.investList[_i].TRANSFERS, this.investList[_i].FEES, this.investList[_i].FEESCHANGES, TransactionStatus.processed);
                 resJson = JSON.parse(res);
-                if (resJson.code == 200) {
-                    // If Investment Elapsed, Update Status to (Finalized)
-                    if (this.investList[_i].duration == _elapsedDays) {
-                        res = yield investments.updateInvestmentStatus(this.investList[_i].CODE, InvestmentStatus.finalized);
-                        resJson = JSON.parse(res);
-                    }
-                }
             }
             return resJson;
         });

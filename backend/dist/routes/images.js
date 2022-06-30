@@ -14,9 +14,7 @@ const upload = multer({ storage: storage });
 // INSERT IMAGE
 // Route: https://localhost/createImage
 //
-router
-    .route('/createImage')
-    .post((req, res, next) => {
+router.route('/createImage').post((req, res, next) => {
     upload.single('image')(req, res, function (error) {
         if (error) {
             const err = (0, exception_1.default)(100, error.code, 'bachend.createImage', error);
@@ -86,9 +84,7 @@ router
 // UPDATE IMAGE
 // Route: https://localhost/updateImage
 //
-router
-    .route('/updateImage')
-    .post((req, res, next) => {
+router.route('/updateImage').post((req, res, next) => {
     upload.single('image')(req, res, function (error) {
         if (error) {
             const err = (0, exception_1.default)(100, error.code, 'bachend.updateImage', error);

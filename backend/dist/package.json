@@ -5,7 +5,7 @@
   "scripts": {
     "start": "tsc && node dist/app.js"
   },
-  "author": "Oscar Pereyra",
+  "author": "Harvest Group",
   "license": "ISC",
   "description": "Harvest Capital OVI BackEnd",
   "devDependencies": {

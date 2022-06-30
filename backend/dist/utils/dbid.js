@@ -24,17 +24,17 @@ const dotenv = __importStar(require("dotenv"));
 // Load .env Variables
 dotenv.config();
 // Create MySQL Connection
-let database = mysql.createConnection({
-    host: process.env.HOSTDB,
-    user: process.env.DBUSER,
-    password: process.env.DBPASSWORD,
-    database: process.env.DBNAME
+let databaseID = mysql.createConnection({
+    host: process.env.HOSTDBID,
+    user: process.env.DBUSERID,
+    password: process.env.DBPASSWORDID,
+    database: process.env.DBNAMEID
 });
 // Connect to MYSQL Data Base
-database.connect(function (err) {
+databaseID.connect(function (err) {
     if (err) {
         return console.error('error: ' + err.message);
     }
-    console.log('Connected to the MySQL server: ' + process.env.DBNAME);
+    console.log('Connected to the MySQL server: ' + process.env.DBNAMEID);
 });
-module.exports = database;
+module.exports = databaseID;

@@ -49,8 +49,20 @@ router.route('/createCustomer').post((req, res) => {
                 });
                 return;
             }
-            res.status(200).send({
-                message: "Successful Transaction",
+            sqlStr = 'SELECT LAST_INSERT_ID()';
+            db.query(sqlStr, function (err, result) {
+                if (err) {
+                    const rtn = (0, exception_1.default)(100, err.code, 'bachend.createCustomer', err);
+                    console.error(rtn);
+                    res.status(rtn.code).send({
+                        message: rtn.message,
+                    });
+                    return;
+                }
+                var msg = '"code": ' + result[0]['LAST_INSERT_ID()'] + ', "message": "Successful Transaction"';
+                res.status(200).send({
+                    message: msg
+                });
             });
         });
     }
@@ -222,7 +234,7 @@ router.route('/getCustomersCount').get((req, res) => {
 // GET CUSTOMER BY ID
 // Route: https://localhost/getCustomer/[customerID]
 //
-router.route('/getCustomer/:customerID').get((req, res) => {
+router.route('/getCustomerByID/:customerID').get((req, res) => {
     // cipher validation
     var auth = req.headers['auth'];
     if (auth != hash) {
@@ -242,7 +254,7 @@ router.route('/getCustomer/:customerID').get((req, res) => {
         var sqlStr = "SELECT * FROM customers WHERE id = '" + req.params.customerID + "'";
         db.query(sqlStr, function (err, result, fields) {
             if (err) {
-                const rtn = (0, exception_1.default)(100, err.code, 'bachend.getCustomer', err);
+                const rtn = (0, exception_1.default)(100, err.code, 'bachend.getCustomerByID', err);
                 console.error(rtn);
                 res.status(rtn.code).send({
                     message: rtn.message,
@@ -254,7 +266,7 @@ router.route('/getCustomer/:customerID').get((req, res) => {
         });
     }
     catch (error) {
-        const err = (0, exception_1.default)(100, error.code, 'bachend.getCustomer', error);
+        const err = (0, exception_1.default)(100, error.code, 'bachend.getCustomerByID', error);
         console.error(error);
         res.status(err.code).send({
             message: err.message,
