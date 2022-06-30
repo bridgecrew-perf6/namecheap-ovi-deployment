@@ -1,0 +1,12 @@
+{
+  "items": [
+    {
+      "code": "01",
+      "name": "BANRESERVAS"
+    },
+    {
+      "code": "02",
+      "name": "POPULAR"
+    }
+  ]
+}

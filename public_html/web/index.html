@@ -14,7 +14,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="/">
+  <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -24,8 +24,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="ovi">
-  <link rel="apple-touch-icon" href="assets/htc192.png">
-  <link rel="icon" type="image/png" href="assets/favicon.ico"/>
+<!--  <link rel="apple-touch-icon" href="assets/htc192.png">-->
+<!--  <link rel="icon" type="image/png" href="assets/favicon.ico"/>-->
+
+  <link rel="the icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
 
   <title>ovi</title>
   <link rel="manifest" href="manifest.json">
@@ -41,7 +44,7 @@
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
   <script>
-    var serviceWorkerVersion = '1561026441';
+    var serviceWorkerVersion = null;
     var scriptLoaded = false;
     function loadMainDartJs() {
       if (scriptLoaded) {

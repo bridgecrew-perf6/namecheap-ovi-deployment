@@ -7,6 +7,54 @@
     {
       "code": "02",
       "name": "POPULAR"
+    },
+    {
+      "code": "03",
+      "name": "ASOC. CIBAO"
+    },
+    {
+      "code": "04",
+      "name": "ASOC. LA NACIONAL"
+    },
+    {
+      "code": "05",
+      "name": "BANCO ADEMI"
+    },
+    {
+      "code": "06",
+      "name": "BANCO ADOPEM"
+    },
+    {
+      "code": "07",
+      "name": "BANCO BANESCO"
+    },
+    {
+      "code": "08",
+      "name": "BANCO BDI"
+    },
+    {
+      "code": "09",
+      "name": "BANCO BHD LEON"
+    },
+    {
+      "code": "10",
+      "name": "BANCO CARIBE"
+    },
+    {
+      "code": "11",
+      "name": "BANCO PROMERICA"
+    },
+    {
+      "code": "12",
+      "name": "BANCO SANTA CRUZ"
+    },
+    {
+      "code": "13",
+      "name": "SCOTIABANK"
+    },
+    {
+      "code": "14",
+      "name": "VIMENCA"
     }
   ]
 }
