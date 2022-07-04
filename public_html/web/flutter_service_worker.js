@@ -10,7 +10,7 @@ const RESOURCES = {
 "assets/assets/background.jpg": "52b95f77b7f1d18e3e071c178081817a",
 "assets/assets/background2.jpg": "f04e8f95f114235bf1ff26d32f8bd6de",
 "assets/assets/background3.jpg": "df5175c440e1ba3d12cbafd6547dc201",
-"assets/assets/banks.json": "53ea3cb9da32ac25c0459734d38c7491",
+"assets/assets/banks.json": "2f19752dbcba3d2c72ccc405b7c4a8f8",
 "assets/assets/favicon.ico": "47328f298d876c55defab5e6061dcd21",
 "assets/assets/headerLogo.png": "d5171317b2da2518eedd6ca6b12327c5",
 "assets/assets/htc1024.png": "899a6e9f537e9624fa5f2f8306f71db1",
@@ -1089,9 +1089,9 @@ const RESOURCES = {
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
-"index.html": "ed12e89caa891d62f3d0dfb5f4e15123",
-"/": "ed12e89caa891d62f3d0dfb5f4e15123",
-"main.dart.js": "dee17e4ae52dc1b8930268073e3665e7",
+"index.html": "cacb6cf79035d2229375d2911c01e4aa",
+"/": "cacb6cf79035d2229375d2911c01e4aa",
+"main.dart.js": "9d65cd84a7474a2a4a11631f52da7a0b",
 "manifest.json": "31b928ce5ffe924a539f82fea7a475c1",
 "version.json": "8e43a1e733b794bf2a538009360aa02a"
 };
@@ -1110,7 +1110,7 @@ self.addEventListener("install", (event) => {
   return event.waitUntil(
     caches.open(TEMP).then((cache) => {
       return cache.addAll(
-        CORE.map((value) => new Request(value, {'cache': 'reload'})));
+        CORE.map((value) => new Request(value, {'cache': 'no-cache'})));
     })
   );
 });
